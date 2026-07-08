@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductImage from '../components/ProductImage'
+import OrderConfirmModal from '../components/OrderConfirmModal'
 import { useCart } from '../context/CartContext'
 import { useCheckoutSession } from '../hooks/useCheckoutSession'
 import { formatPrice } from '../utils/format'
 import { formatPhoneForDisplay } from '../utils/phone'
-import { redirectToWhatsAppWithOrderRef } from '../utils/whatsapp'
 import { createOrder } from '../services/orders'
 
 export default function Checkout() {
@@ -50,6 +50,9 @@ export default function Checkout() {
   const [giftCardInput, setGiftCardInput] = useState('')
   const [showGiftCard, setShowGiftCard] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmStep, setConfirmStep] = useState('confirm')
+  const [orderRef, setOrderRef] = useState('')
 
   useEffect(() => {
     if (!session) return
@@ -99,16 +102,30 @@ export default function Checkout() {
     updateQuantity(item.id, item.quantity - 1)
   }
 
-  const handlePlaceOrder = async (e) => {
+  const handleSaveOrder = (e) => {
     e.preventDefault()
     if (!validate()) return
     if (items.length === 0) return
+    setConfirmStep('confirm')
+    setOrderRef('')
+    setErrors((prev) => ({ ...prev, submit: '' }))
+    setConfirmOpen(true)
+  }
+
+  const handleCloseConfirm = () => {
+    if (submitting) return
+    setConfirmOpen(false)
+    setConfirmStep('confirm')
+  }
+
+  const handleConfirmOrder = async () => {
+    if (submitting || items.length === 0) return
 
     setSubmitting(true)
     setErrors((prev) => ({ ...prev, submit: '' }))
 
     try {
-      const { order_ref: orderRef } = await createOrder({
+      const { order_ref: savedOrderRef } = await createOrder({
         customer: form,
         items,
         total,
@@ -116,20 +133,30 @@ export default function Checkout() {
         discountAmount,
       })
 
-      navigate('/', { replace: true })
+      setOrderRef(savedOrderRef)
+      setConfirmStep('success')
       clearCart()
-      redirectToWhatsAppWithOrderRef(orderRef)
     } catch (err) {
       setErrors((prev) => ({
         ...prev,
         submit: err.message || 'Failed to place order. Please try again.',
       }))
+      setConfirmOpen(false)
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (items.length === 0) {
+  const handleBackToStore = () => {
+    setConfirmOpen(false)
+    setConfirmStep('confirm')
+    setOrderRef('')
+    navigate('/', { replace: true })
+  }
+
+  const showSuccessState = confirmOpen && confirmStep === 'success'
+
+  if (items.length === 0 && !showSuccessState) {
     return (
       <div className="page">
         <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
@@ -179,7 +206,7 @@ export default function Checkout() {
         <div className="checkout__layout">
           <section className="checkout__form-section">
             <h2 className="checkout__section-title">Delivery Details</h2>
-            <form className="checkout-form" onSubmit={handlePlaceOrder} noValidate>
+            <form className="checkout-form" onSubmit={handleSaveOrder} noValidate>
               <div className="form-group">
                 <label htmlFor="fullName">Full Name *</label>
                 <input
@@ -314,7 +341,7 @@ export default function Checkout() {
                 className="btn btn--primary btn--full checkout-form__submit"
                 disabled={submitting || sessionLoading}
               >
-                {submitting ? 'Saving order…' : 'Save order & continue on WhatsApp'}
+                Save order
               </button>
             </form>
           </section>
@@ -412,6 +439,18 @@ export default function Checkout() {
         </div>
       </main>
       <Footer />
+
+      <OrderConfirmModal
+        isOpen={confirmOpen}
+        step={confirmStep}
+        total={total}
+        orderRef={orderRef}
+        submitting={submitting}
+        error={errors.submit}
+        onClose={handleCloseConfirm}
+        onConfirm={handleConfirmOrder}
+        onBackToStore={handleBackToStore}
+      />
     </div>
   )
 }
