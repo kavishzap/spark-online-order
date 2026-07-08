@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 // const HERO_IMAGE_SRC = '/hero.png'
 
-const HERO_VIDEO_SRC = '/hero.mp4?v=1'
+const HERO_VIDEO_SRC = '/ElevenLabs_video_topaz-video-upscale_2026-07-08T20_37_08.mp4'
 
 export default function StoreHero() {
   const videoRef = useRef(null)
