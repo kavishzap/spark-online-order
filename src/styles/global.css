@@ -538,20 +538,15 @@ ul {
   aspect-ratio: 16 / 9;
   max-height: min(56vw, 560px);
   overflow: hidden;
-  background: #fff;
+  background: #050301;
 }
 
 .store-hero__image,
 .store-hero__video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
-  background: #fff;
-}
-
-.store-hero__video {
-  mix-blend-mode: screen;
 }
 
 .store-hero__sound-btn {
