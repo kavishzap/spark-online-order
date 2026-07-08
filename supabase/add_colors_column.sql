@@ -1,0 +1,6 @@
+-- Colors are stored in whatsapp_bot_item_colors (linked to whatsapp_bot_items via item_id).
+-- Run in Supabase Dashboard → SQL Editor
+--
+-- Example:
+-- INSERT INTO public.whatsapp_bot_item_colors (item_id, color_name, color_hex, sort_order)
+-- VALUES ('<item-uuid>', 'Black', '#1a1a1a', 0);
