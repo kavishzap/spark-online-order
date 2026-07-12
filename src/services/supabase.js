@@ -52,6 +52,7 @@ async function fetchProductsDirect() {
     .from('whatsapp_bot_items')
     .select(PRODUCT_LIST_SELECT)
     .eq('company', 'spark')
+    .eq('is_website', true)
     .order('sort_order', { ascending: true })
     .order('product_name', { ascending: true })
 
@@ -113,6 +114,7 @@ export async function fetchProductImageBase64(productId) {
     .select(PRODUCT_IMAGE_SELECT)
     .eq('id', productId)
     .eq('company', 'spark')
+    .eq('is_website', true)
     .maybeSingle()
 
   if (error) {

@@ -19,10 +19,8 @@ export function buildContinueOnWhatsAppUrl(orderRef) {
 export function buildOrderMessage({
   customer,
   items,
-  giftCardCode,
   refillGiftCardCode,
   subtotal,
-  discount,
   deliveryFee,
   total,
   orderRef,
@@ -60,19 +58,8 @@ export function buildOrderMessage({
     lines.push(`Refill Gift Card: ${refillGiftCardCode}`)
   }
 
-  if (giftCardCode) {
-    lines.push(`Discount Gift Card: ${giftCardCode}`)
-  }
-
-  if (giftCardCode || deliveryFee > 0) {
-    lines.push(`Subtotal: ${formatPrice(subtotal)}`)
-  }
-
-  if (discount > 0) {
-    lines.push(`Discount: -${formatPrice(discount)}`)
-  }
-
   if (deliveryFee > 0) {
+    lines.push(`Subtotal: ${formatPrice(subtotal)}`)
     lines.push(`Delivery fee: ${formatPrice(deliveryFee)}`)
   }
 

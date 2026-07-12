@@ -26,15 +26,10 @@ export default function Checkout() {
     items,
     subtotal,
     deliveryFee,
-    discountAmount,
     showBottleDeliveryNote,
     bottleFreeDeliveryMessage,
     total,
-    giftCardCode,
     refillGiftCardCode,
-    giftCardMessage,
-    applyGiftCard,
-    removeGiftCard,
     clearCart,
     updateQuantity,
     removeFromCart,
@@ -47,8 +42,6 @@ export default function Checkout() {
     notes: '',
   })
   const [errors, setErrors] = useState({})
-  const [giftCardInput, setGiftCardInput] = useState('')
-  const [showGiftCard, setShowGiftCard] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [confirmStep, setConfirmStep] = useState('confirm')
@@ -78,20 +71,6 @@ export default function Checkout() {
     if (!form.address.trim()) next.address = 'Address is required'
     setErrors(next)
     return Object.keys(next).length === 0
-  }
-
-  const handleApplyGiftCard = () => {
-    if (!giftCardInput.trim()) return
-    applyGiftCard(giftCardInput)
-  }
-
-  const handleGiftCardToggle = (e) => {
-    const checked = e.target.checked
-    setShowGiftCard(checked)
-    if (!checked) {
-      setGiftCardInput('')
-      removeGiftCard()
-    }
   }
 
   const handleDecreaseQuantity = (item) => {
@@ -130,7 +109,6 @@ export default function Checkout() {
         items,
         total,
         deliveryFee,
-        discountAmount,
       })
 
       setOrderRef(savedOrderRef)
@@ -274,62 +252,6 @@ export default function Checkout() {
                 />
               </div>
 
-              <div className="form-group form-group--checkbox">
-                <label className="form-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={showGiftCard}
-                    onChange={handleGiftCardToggle}
-                  />
-                  <span>Do you have a gift card?</span>
-                </label>
-              </div>
-
-              {showGiftCard && (
-                <div className="form-group checkout-form__gift-card">
-                  <div className="gift-card-form">
-                    <input
-                      type="text"
-                      className="gift-card-form__input"
-                      placeholder="Gift card code"
-                      value={giftCardInput}
-                      onChange={(e) => setGiftCardInput(e.target.value)}
-                      aria-label="Gift card code"
-                    />
-                    <button
-                      type="button"
-                      className="btn btn--secondary btn--sm"
-                      onClick={handleApplyGiftCard}
-                    >
-                      Apply
-                    </button>
-                  </div>
-
-                  {giftCardMessage && (
-                    <p
-                      className={`gift-card-form__message gift-card-form__message--${giftCardMessage.type}`}
-                    >
-                      {giftCardMessage.text}
-                    </p>
-                  )}
-
-                  {giftCardCode && (
-                    <div className="gift-card-applied">
-                      <span>
-                        Code: <strong>{giftCardCode}</strong>
-                      </span>
-                      <button
-                        type="button"
-                        className="gift-card-applied__remove"
-                        onClick={removeGiftCard}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
               {errors.submit && (
                 <p className="form-error checkout-form__submit-error" role="alert">
                   {errors.submit}
@@ -422,12 +344,6 @@ export default function Checkout() {
                 <div className="cart-totals__row">
                   <span>Delivery fee</span>
                   <span>{formatPrice(deliveryFee)}</span>
-                </div>
-              )}
-              {discountAmount > 0 && (
-                <div className="cart-totals__row cart-totals__row--discount">
-                  <span>Gift card discount</span>
-                  <span>−{formatPrice(discountAmount)}</span>
                 </div>
               )}
               <div className="cart-totals__row cart-totals__row--total">

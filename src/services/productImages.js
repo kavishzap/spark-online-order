@@ -27,6 +27,7 @@ async function fetchProductImageDirect(productId) {
     .select('image_base64')
     .eq('id', productId)
     .eq('company', 'spark')
+    .eq('is_website', true)
     .maybeSingle()
 
   if (error) throw new Error(error.message)

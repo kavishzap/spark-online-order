@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { validatePercentGiftCard, validateRefillGiftCard } from '../config/giftCards'
+import { validateRefillGiftCard } from '../config/giftCards'
 import {
   BOTTLE_FREE_DELIVERY_MESSAGE,
   GIFT_REFILL_DELIVERY_FEE,
@@ -27,8 +27,6 @@ function loadCart() {
     if (!raw) {
       return {
         items: [],
-        giftCardCode: '',
-        giftCardDiscount: 0,
         refillGiftCardCode: '',
       }
     }
@@ -38,28 +36,22 @@ function loadCart() {
       : []
     return {
       items,
-      giftCardCode: parsed.giftCardCode ?? '',
-      giftCardDiscount: parsed.giftCardDiscount ?? 0,
       refillGiftCardCode: parsed.refillGiftCardCode ?? '',
     }
   } catch {
     return {
       items: [],
-      giftCardCode: '',
-      giftCardDiscount: 0,
       refillGiftCardCode: '',
     }
   }
 }
 
-function saveCart({ items, giftCardCode, giftCardDiscount, refillGiftCardCode }) {
+function saveCart({ items, refillGiftCardCode }) {
   try {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
         items: items.map(stripCartItemForStorage),
-        giftCardCode,
-        giftCardDiscount,
         refillGiftCardCode,
       }),
     )
@@ -70,15 +62,10 @@ function saveCart({ items, giftCardCode, giftCardDiscount, refillGiftCardCode })
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => loadCart().items)
-  const [giftCardCode, setGiftCardCode] = useState(() => loadCart().giftCardCode)
-  const [giftCardDiscount, setGiftCardDiscount] = useState(
-    () => loadCart().giftCardDiscount,
-  )
   const [refillGiftCardCode, setRefillGiftCardCode] = useState(
     () => loadCart().refillGiftCardCode,
   )
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const [giftCardMessage, setGiftCardMessage] = useState(null)
   const [refillBannerMessage, setRefillBannerMessage] = useState(null)
   const [cartToast, setCartToast] = useState(null)
   const cartToastTimerRef = useRef(null)
@@ -125,8 +112,8 @@ export function CartProvider({ children }) {
   )
 
   useEffect(() => {
-    saveCart({ items, giftCardCode, giftCardDiscount, refillGiftCardCode })
-  }, [items, giftCardCode, giftCardDiscount, refillGiftCardCode])
+    saveCart({ items, refillGiftCardCode })
+  }, [items, refillGiftCardCode])
 
   const addToCart = useCallback(
     (product, selectedColor = null) => {
@@ -249,36 +236,8 @@ export function CartProvider({ children }) {
 
   const clearCart = useCallback(() => {
     setItems([])
-    setGiftCardCode('')
-    setGiftCardDiscount(0)
     setRefillGiftCardCode('')
-    setGiftCardMessage(null)
     setRefillBannerMessage(null)
-  }, [])
-
-  const applyGiftCard = useCallback((code) => {
-    const result = validatePercentGiftCard(code)
-
-    if (!result.valid) {
-      setGiftCardCode('')
-      setGiftCardDiscount(0)
-      setGiftCardMessage({ type: 'error', text: 'Invalid gift card code.' })
-      return false
-    }
-
-    setGiftCardCode(result.code)
-    setGiftCardDiscount(result.discount)
-    setGiftCardMessage({
-      type: 'success',
-      text: `Gift card applied! ${result.label}`,
-    })
-    return true
-  }, [])
-
-  const removeGiftCard = useCallback(() => {
-    setGiftCardCode('')
-    setGiftCardDiscount(0)
-    setGiftCardMessage(null)
   }, [])
 
   const subtotal = useMemo(
@@ -298,14 +257,9 @@ export function CartProvider({ children }) {
     [items],
   )
 
-  const discountAmount = useMemo(
-    () => (giftCardDiscount > 0 ? (subtotal * giftCardDiscount) / 100 : 0),
-    [subtotal, giftCardDiscount],
-  )
-
   const total = useMemo(
-    () => Math.max(0, subtotal - discountAmount + deliveryFee),
-    [subtotal, discountAmount, deliveryFee],
+    () => subtotal + deliveryFee,
+    [subtotal, deliveryFee],
   )
 
   const itemCount = useMemo(
@@ -324,13 +278,9 @@ export function CartProvider({ children }) {
     bottleCount,
     showBottleDeliveryNote,
     bottleFreeDeliveryMessage: BOTTLE_FREE_DELIVERY_MESSAGE,
-    discountAmount,
     total,
     hasGiftRefill,
-    giftCardCode,
-    giftCardDiscount,
     refillGiftCardCode,
-    giftCardMessage,
     refillBannerMessage,
     isCartOpen,
     cartToast,
@@ -340,11 +290,8 @@ export function CartProvider({ children }) {
     removeFromCart,
     updateQuantity,
     clearCart,
-    applyGiftCard,
-    removeGiftCard,
     openCart,
     closeCart,
-    setGiftCardMessage,
     setRefillBannerMessage,
   }
 
