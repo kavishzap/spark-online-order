@@ -97,6 +97,7 @@ export async function createOrderInDb(
   const order = await callOrdersEdge(
     {
       company: 'spark',
+      source: 'whatsapp',
       status: 'completed',
       customer_name: customer.fullName.trim(),
       customer_phone_number: normalizePhone(customer.phone),
