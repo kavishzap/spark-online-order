@@ -67,7 +67,7 @@ export default function Footer() {
               <img src={FOOTER_LOGO_SRC} alt={APP_NAME} className="footer__brand-image" />
             </Link>
             <p className="footer__brand-text">
-              Premium home carbonation machines, refills, and flavours — delivered across Mauritius.
+              Welcome to Spark Mauritius, your one-stop online shop for a wide range of high-quality products delivered right to your doorstep.
             </p>
           </div>
 
