@@ -65,7 +65,13 @@ async function callOrdersEdge(payload, { supabaseUrl, serviceKey }) {
   const body = await response.json().catch(() => ({}))
 
   if (!response.ok || !body.success) {
-    throw new Error(body.error || body.message || `Order API failed (${response.status})`)
+    const detail =
+      typeof body.error === 'string'
+        ? body.error
+        : body.error
+          ? JSON.stringify(body.error)
+          : body.message || `Order API failed (${response.status})`
+    throw new Error(detail)
   }
 
   return body.data
