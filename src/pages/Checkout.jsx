@@ -109,6 +109,7 @@ export default function Checkout() {
         items,
         total,
         deliveryFee,
+        source: 'whatsapp',
       })
 
       setOrderRef(savedOrderRef)

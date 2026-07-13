@@ -1,11 +1,25 @@
 /**
  * Create an order via /api/orders (dev Vite proxy or production serverless).
  */
-export async function createOrder({ customer, items, total, deliveryFee, discountAmount }) {
+export async function createOrder({
+  customer,
+  items,
+  total,
+  deliveryFee,
+  discountAmount,
+  source = 'whatsapp',
+}) {
   const response = await fetch('/api/orders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ customer, items, total, deliveryFee, discountAmount }),
+    body: JSON.stringify({
+      customer,
+      items,
+      total,
+      deliveryFee,
+      discountAmount,
+      source,
+    }),
   })
 
   const body = await response.json().catch(() => ({}))

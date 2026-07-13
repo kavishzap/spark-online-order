@@ -1,5 +1,7 @@
 import { normalizePhone } from '../../src/utils/phone.js'
 
+const ORDER_SOURCE = 'whatsapp'
+
 export function parseCityFromAddress(address) {
   const parts = address
     .split(',')
@@ -69,11 +71,32 @@ async function callOrdersEdge(payload, { supabaseUrl, serviceKey }) {
   return body.data
 }
 
+async function patchOrderSource(orderId, source, { supabaseUrl, serviceKey }) {
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/whatsapp_bot_orders?id=eq.${encodeURIComponent(orderId)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${serviceKey}`,
+        apikey: serviceKey,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ source }),
+    },
+  )
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(text || `Failed to set order source (${response.status})`)
+  }
+}
+
 /**
  * Create a completed order via whatsapp-bot-orders edge function (SM-xxx ref).
  */
 export async function createOrderInDb(
-  { customer, items, total, deliveryFee, discountAmount },
+  { customer, items, total, deliveryFee, discountAmount, source = ORDER_SOURCE },
   { supabaseUrl, serviceKey },
 ) {
   if (!customer?.fullName?.trim()) {
@@ -97,7 +120,7 @@ export async function createOrderInDb(
   const order = await callOrdersEdge(
     {
       company: 'spark',
-      source: 'whatsapp',
+      source,
       status: 'completed',
       customer_name: customer.fullName.trim(),
       customer_phone_number: normalizePhone(customer.phone),
@@ -108,6 +131,10 @@ export async function createOrderInDb(
     },
     { supabaseUrl, serviceKey },
   )
+
+  if (order?.id && source) {
+    await patchOrderSource(order.id, source, { supabaseUrl, serviceKey })
+  }
 
   return {
     id: order.id,
