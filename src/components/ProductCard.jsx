@@ -37,7 +37,7 @@ export default function ProductCard({ product, priority = false }) {
             imageBase64={product.image_base64}
             className="product-card__image"
             skeletonClassName="product-card__image-skeleton"
-            eager={priority}
+            eager
           />
         </button>
 

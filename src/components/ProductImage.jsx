@@ -34,6 +34,7 @@ export default function ProductImage({
     let cancelled = false
 
     const loadImage = () => {
+      setIsLoading(true)
       loadProductImage(productId)
         .then((nextSrc) => {
           if (cancelled) return
@@ -44,6 +45,8 @@ export default function ProductImage({
         })
     }
 
+    // Store cards: start loading as soon as mounted (queue limits concurrency).
+    // Cart/checkout keep eager the same way.
     if (eager) {
       loadImage()
       return () => {
@@ -52,7 +55,14 @@ export default function ProductImage({
     }
 
     const container = containerRef.current
-    if (!container) return undefined
+    if (!container) {
+      // Ref not ready yet — still load so images aren't stuck forever
+      loadImage()
+      return () => {
+        cancelled = true
+      }
+    }
+
     if (typeof IntersectionObserver === 'undefined') {
       loadImage()
       return () => {
@@ -66,7 +76,7 @@ export default function ProductImage({
         observer.disconnect()
         loadImage()
       },
-      { rootMargin: '600px 0px' },
+      { rootMargin: '800px 0px' },
     )
 
     observer.observe(container)

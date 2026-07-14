@@ -8,9 +8,17 @@ export function formatPrice(amount) {
 
 /**
  * Convert a base64 image string to a usable data URI.
+ * Detects jpeg/png/webp/gif from the payload when no data: prefix is present.
  */
 export function toImageSrc(imageBase64) {
   if (!imageBase64) return null
   if (imageBase64.startsWith('data:')) return imageBase64
-  return `data:image/jpeg;base64,${imageBase64}`
+
+  const raw = imageBase64.trim()
+  let mime = 'image/jpeg'
+  if (raw.startsWith('iVBOR')) mime = 'image/png'
+  else if (raw.startsWith('R0lGOD')) mime = 'image/gif'
+  else if (raw.startsWith('UklGR')) mime = 'image/webp'
+
+  return `data:${mime};base64,${raw}`
 }

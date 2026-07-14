@@ -10,7 +10,7 @@ import { fetchProducts } from '../services/supabase'
 import { prefetchProductImages } from '../services/productImages'
 
 const SKELETON_COUNT = 6
-const PREFETCH_COUNT = 24
+const PREFETCH_COUNT = 8
 
 export default function Store() {
   const [products, setProducts] = useState([])
