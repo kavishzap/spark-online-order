@@ -26,7 +26,7 @@ export const DEFAULT_KEYWORDS = [
   'Spark Distributors',
 ].join(', ')
 
-export const OG_IMAGE_PATH = '/banner.png'
+export const OG_IMAGE_PATH = '/spark-mauritius-logo.png'
 
 export const CONTACT = {
   email: 'sparkdistributorsltd@gmail.com',

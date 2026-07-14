@@ -83,7 +83,7 @@ export function buildOrganizationJsonLd() {
     alternateName: ['Spark', 'Spark Distributors Ltd', 'Spark Mauritius Order Platform'],
     url: SITE_URL,
     logo: absoluteImageUrl('/logo.png'),
-    image: absoluteImageUrl('/banner.png'),
+    image: absoluteImageUrl('/spark-mauritius-logo.png'),
     description: DEFAULT_DESCRIPTION,
     email: 'sparkdistributorsltd@gmail.com',
     telephone: '+23057657918',
