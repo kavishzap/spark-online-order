@@ -1,4 +1,4 @@
-export const CONTACT_EMAIL = 'Sparkdistributorsltd@gmail.com'
+export const CONTACT_EMAIL = 'sparkdistributorsltd@gmail.com'
 
 export const CONTACT_ADDRESS = 'General de Gaulles Street Curepipe, Curepipe, Mauritius'
 

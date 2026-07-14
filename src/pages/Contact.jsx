@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Seo from '../components/Seo'
+import StoreHero from '../components/StoreHero'
 import { PAGE_SEO } from '../config/seo'
 import { formatPhoneForDisplay } from '../utils/phone'
 import { SOCIAL_LINKS, WHATSAPP_NUMBER } from '../config/social'
@@ -11,8 +12,6 @@ import {
   CONTACT_MAP_EMBED_URL,
   CONTACT_MAPS_URL,
 } from '../config/contact'
-
-const BANNER_SRC = '/banner.png'
 
 export default function Contact() {
   return (
@@ -25,13 +24,7 @@ export default function Contact() {
       <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
 
       <main className="contact-page">
-        <div className="contact-banner">
-          <img
-            src={BANNER_SRC}
-            alt="Contact Spark Mauritius online shop in Mauritius"
-            className="contact-banner__image"
-          />
-        </div>
+        <StoreHero />
 
         <div className="contact">
           <div className="contact__header">

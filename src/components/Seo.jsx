@@ -85,7 +85,7 @@ export function buildOrganizationJsonLd() {
     logo: absoluteImageUrl('/logo.png'),
     image: absoluteImageUrl('/banner.png'),
     description: DEFAULT_DESCRIPTION,
-    email: 'Sparkdistributorsltd@gmail.com',
+    email: 'sparkdistributorsltd@gmail.com',
     telephone: '+23057657918',
     address: {
       '@type': 'PostalAddress',

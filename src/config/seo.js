@@ -29,7 +29,7 @@ export const DEFAULT_KEYWORDS = [
 export const OG_IMAGE_PATH = '/banner.png'
 
 export const CONTACT = {
-  email: 'Sparkdistributorsltd@gmail.com',
+  email: 'sparkdistributorsltd@gmail.com',
   phone: '+23057657918',
   address: {
     street: 'General de Gaulles Street',

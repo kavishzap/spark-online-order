@@ -1,10 +1,11 @@
+import { supabase } from './supabase'
 import { toImageSrc } from '../utils/format'
 
 const imageSrcCache = new Map()
 const inflight = new Map()
 
 /** Max parallel image requests (each image is large base64). */
-const MAX_CONCURRENT = 3
+const MAX_CONCURRENT = 4
 
 const queue = []
 let active = 0
@@ -18,6 +19,19 @@ function cacheImage(productId, imageBase64) {
 
 export function getCachedProductImageSrc(productId) {
   return imageSrcCache.get(productId) ?? null
+}
+
+async function fetchProductImageDirect(productId) {
+  const { data, error } = await supabase
+    .from('whatsapp_bot_items')
+    .select('image_base64')
+    .eq('id', productId)
+    .eq('company', 'spark')
+    .eq('is_website', true)
+    .maybeSingle()
+
+  if (error) throw new Error(error.message)
+  return data?.image_base64 ?? null
 }
 
 async function fetchProductImageViaApi(productId) {
@@ -34,12 +48,28 @@ async function fetchProductImageViaApi(productId) {
   return data?.image_base64 ?? null
 }
 
+async function fetchProductImageBase64(productId) {
+  // Prefer service-role API (works even when anon RLS blocks spark rows).
+  try {
+    const viaApi = await fetchProductImageViaApi(productId)
+    if (viaApi) return viaApi
+  } catch {
+    // fall through to direct
+  }
+
+  try {
+    return await fetchProductImageDirect(productId)
+  } catch {
+    return null
+  }
+}
+
 function pumpQueue() {
   while (active < MAX_CONCURRENT && queue.length > 0) {
     const job = queue.shift()
     active += 1
 
-    const run = fetchProductImageViaApi(job.productId)
+    const run = fetchProductImageBase64(job.productId)
       .then((imageBase64) => {
         const src = cacheImage(job.productId, imageBase64)
         job.resolve(src)
@@ -59,15 +89,11 @@ function pumpQueue() {
   }
 }
 
-/**
- * Prefetch images with a concurrency limit (avoids huge batch payloads).
- */
 export function prefetchProductImages(productIds) {
   const ids = [...new Set((productIds || []).filter(Boolean))]
   return Promise.all(ids.map((id) => loadProductImage(id)))
 }
 
-/** Load and cache a product image by id (queued, concurrency-limited). */
 export function loadProductImage(productId) {
   if (!productId) return Promise.resolve(null)
 
@@ -79,16 +105,14 @@ export function loadProductImage(productId) {
     return inflight.get(productId)
   }
 
+  let resolveOuter
   const promise = new Promise((resolve) => {
-    queue.push({ productId, resolve })
-    pumpQueue()
+    resolveOuter = resolve
   })
 
-  // Placeholder so duplicate calls wait on the same result once queued
-  inflight.set(
-    productId,
-    promise.then((src) => src),
-  )
+  inflight.set(productId, promise)
+  queue.push({ productId, resolve: resolveOuter })
+  pumpQueue()
 
   return promise
 }
