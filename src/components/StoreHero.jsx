@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 // const HERO_IMAGE_SRC = '/hero.png'
 
-const HERO_VIDEO_SRC = '/ElevenLabs_video_topaz-video-upscale_2026-07-08T20_37_08.mp4'
+const HERO_VIDEO_SRC = '/banner.mp4'
 
 export default function StoreHero() {
   const videoRef = useRef(null)
@@ -58,7 +58,7 @@ export default function StoreHero() {
   }
 
   return (
-    <section className="store-hero" aria-label="Spark Mauritius Order Platform showcase">
+    <section className="store-hero" aria-label="Spark Mauritius online store showcase">
       <video
         ref={videoRef}
         className="store-hero__video"

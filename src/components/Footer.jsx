@@ -8,7 +8,7 @@ import {
 import { formatPhoneForDisplay } from '../utils/phone'
 
 const FOOTER_LOGO_SRC = '/footer-logo.png'
-const APP_NAME = 'Spark Mauritius Order Platform'
+const APP_NAME = 'Spark Mauritius'
 
 const SOCIAL_ITEMS = [
   {
@@ -151,7 +151,7 @@ export default function Footer() {
       </div>
 
       <div className="footer__bottom">
-        <p className="footer__copy">&copy; {year} Spark Mauritius Order Platform. All rights reserved.</p>
+        <p className="footer__copy">&copy; {year} Spark Mauritius. All rights reserved.</p>
       </div>
     </footer>
   )

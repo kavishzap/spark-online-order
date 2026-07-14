@@ -1,5 +1,7 @@
 import { Link, useLocation, Navigate } from 'react-router-dom'
 import Header from '../components/Header'
+import Seo from '../components/Seo'
+import { PAGE_SEO } from '../config/seo'
 
 export default function OrderSuccess() {
   const location = useLocation()
@@ -11,6 +13,12 @@ export default function OrderSuccess() {
 
   return (
     <div className="page">
+      <Seo
+        title={PAGE_SEO.orderSuccess.title}
+        description={PAGE_SEO.orderSuccess.description}
+        path={PAGE_SEO.orderSuccess.path}
+        noindex
+      />
       <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
 
       <main className="checkout checkout--empty">

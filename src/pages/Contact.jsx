@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import Seo from '../components/Seo'
+import { PAGE_SEO } from '../config/seo'
 import { formatPhoneForDisplay } from '../utils/phone'
 import { SOCIAL_LINKS, WHATSAPP_NUMBER } from '../config/social'
 import {
@@ -15,11 +17,20 @@ const BANNER_SRC = '/banner.png'
 export default function Contact() {
   return (
     <div className="page">
+      <Seo
+        title={PAGE_SEO.contact.title}
+        description={PAGE_SEO.contact.description}
+        path={PAGE_SEO.contact.path}
+      />
       <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
 
       <main className="contact-page">
         <div className="contact-banner">
-          <img src={BANNER_SRC} alt="Spark Mauritius Order Platform" className="contact-banner__image" />
+          <img
+            src={BANNER_SRC}
+            alt="Contact Spark Mauritius online shop in Mauritius"
+            className="contact-banner__image"
+          />
         </div>
 
         <div className="contact">
@@ -27,9 +38,10 @@ export default function Contact() {
             <Link to="/" className="contact__back">
               ← Back to store
             </Link>
-            <h1 className="contact__title">Contact Us</h1>
+            <h1 className="contact__title">Contact Spark Mauritius</h1>
             <p className="contact__intro">
-              Questions about orders, products, or delivery? We&apos;re happy to help.
+              Questions about orders, products, or delivery across Mauritius? Reach our online shop
+              team in Curepipe — we&apos;re happy to help.
             </p>
           </div>
 

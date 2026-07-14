@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext'
 import ColorSelectModal from './ColorSelectModal'
 import ProductImage from './ProductImage'
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, priority = false }) {
   const { addToCart } = useCart()
   const colors = getProductColors(product)
   const hasColors = productHasColors(product)
@@ -37,6 +37,7 @@ export default function ProductCard({ product }) {
             imageBase64={product.image_base64}
             className="product-card__image"
             skeletonClassName="product-card__image-skeleton"
+            eager={priority}
           />
         </button>
 

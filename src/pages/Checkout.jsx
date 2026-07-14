@@ -4,6 +4,8 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductImage from '../components/ProductImage'
 import OrderConfirmModal from '../components/OrderConfirmModal'
+import Seo from '../components/Seo'
+import { PAGE_SEO } from '../config/seo'
 import { useCart } from '../context/CartContext'
 import { useCheckoutSession } from '../hooks/useCheckoutSession'
 import { formatPrice } from '../utils/format'
@@ -138,6 +140,12 @@ export default function Checkout() {
   if (items.length === 0 && !showSuccessState) {
     return (
       <div className="page">
+        <Seo
+          title={PAGE_SEO.checkout.title}
+          description={PAGE_SEO.checkout.description}
+          path={PAGE_SEO.checkout.path}
+          noindex
+        />
         <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
         <main className="checkout checkout--empty">
           <div className="checkout__empty">
@@ -155,6 +163,12 @@ export default function Checkout() {
 
   return (
     <div className="page">
+      <Seo
+        title={PAGE_SEO.checkout.title}
+        description={PAGE_SEO.checkout.description}
+        path={PAGE_SEO.checkout.path}
+        noindex
+      />
       <Header showSearch={false} searchQuery="" onSearchChange={() => {}} />
 
       <main className="checkout">

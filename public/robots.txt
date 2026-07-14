@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /checkout
+Disallow: /order-success
+
+Sitemap: https://sparkmauritius.com/sitemap.xml

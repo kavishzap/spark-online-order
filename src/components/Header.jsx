@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 const LOGO_SRC = '/logo.png'
-const APP_NAME = 'Spark Mauritius Order Platform'
+const APP_NAME = 'Spark Mauritius'
 
 export default function Header({ searchQuery, onSearchChange, showSearch = true }) {
   const { itemCount, openCart } = useCart()

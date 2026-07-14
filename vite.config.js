@@ -40,15 +40,21 @@ function productsApiPlugin(env) {
         try {
           const requestUrl = new URL(req.url, 'http://localhost')
           const productId = requestUrl.searchParams.get('id')
+          const productIdsParam = requestUrl.searchParams.get('ids')
           const fields = requestUrl.searchParams.get('fields')
+          const productIds = productIdsParam
+            ? productIdsParam.split(',').map((id) => id.trim()).filter(Boolean)
+            : productId
+              ? [productId]
+              : []
 
-          if (productId && fields === 'image') {
+          if (fields === 'image' && productIds.length > 0) {
+            const encodedIds = productIds.map((id) => encodeURIComponent(id)).join(',')
             const url =
               `${supabaseUrl}/rest/v1/whatsapp_bot_items` +
-              `?select=${encodeURIComponent(PRODUCT_IMAGE_SELECT)}` +
-              `&id=eq.${encodeURIComponent(productId)}` +
-              `&${PRODUCT_COMPANY_FILTER}` +
-              `&limit=1`
+              `?select=${encodeURIComponent(`id,${PRODUCT_IMAGE_SELECT}`)}` +
+              `&id=in.(${encodedIds})` +
+              `&${PRODUCT_COMPANY_FILTER}`
 
             const response = await fetch(url, {
               headers: {
@@ -62,9 +68,22 @@ function productsApiPlugin(env) {
               throw new Error(text || `Supabase error ${response.status}`)
             }
 
-            const [row] = await response.json()
+            const rows = await response.json()
             res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ image_base64: row?.image_base64 ?? null }))
+
+            if (!productIdsParam && productIds.length === 1) {
+              res.end(JSON.stringify({ image_base64: rows?.[0]?.image_base64 ?? null }))
+              return
+            }
+
+            res.end(
+              JSON.stringify(
+                (rows ?? []).map((row) => ({
+                  id: row.id,
+                  image_base64: row.image_base64 ?? null,
+                })),
+              ),
+            )
             return
           }
 

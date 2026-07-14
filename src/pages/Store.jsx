@@ -3,11 +3,14 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
 import ProductCardSkeleton from '../components/ProductCardSkeleton'
+import Seo from '../components/Seo'
 import StoreHero from '../components/StoreHero'
+import { PAGE_SEO } from '../config/seo'
 import { fetchProducts } from '../services/supabase'
-import { loadProductImage } from '../services/productImages'
+import { prefetchProductImages } from '../services/productImages'
 
 const SKELETON_COUNT = 6
+const PREFETCH_COUNT = 24
 
 export default function Store() {
   const [products, setProducts] = useState([])
@@ -39,9 +42,7 @@ export default function Store() {
 
   useEffect(() => {
     if (products.length === 0) return
-    products.slice(0, 6).forEach((product) => {
-      loadProductImage(product.id)
-    })
+    prefetchProductImages(products.slice(0, PREFETCH_COUNT).map((product) => product.id))
   }, [products])
 
   const filteredProducts = useMemo(() => {
@@ -55,10 +56,26 @@ export default function Store() {
 
   return (
     <div className="page">
+      <Seo
+        title={PAGE_SEO.home.title}
+        description={PAGE_SEO.home.description}
+        path={PAGE_SEO.home.path}
+      />
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
       <main className="store-page">
         <StoreHero />
+
+        <section className="store-intro" aria-labelledby="store-intro-title">
+          <h1 id="store-intro-title" className="store-intro__title">
+            Spark Mauritius — Online Store &amp; One-Stop Shop in Mauritius
+          </h1>
+          <p className="store-intro__text">
+            Welcome to Spark Mauritius, your one-stop online shop for a wide range of high-quality
+            products delivered right to your doorstep. Shop online across Mauritius with fast WhatsApp
+            support from our Curepipe base.
+          </p>
+        </section>
 
         <div className="store">
           {error && (
@@ -92,8 +109,12 @@ export default function Store() {
                   ? Array.from({ length: SKELETON_COUNT }, (_, index) => (
                       <ProductCardSkeleton key={`skeleton-${index}`} />
                     ))
-                  : filteredProducts.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                  : filteredProducts.map((product, index) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        priority={index < 4}
+                      />
                     ))}
               </div>
             </>

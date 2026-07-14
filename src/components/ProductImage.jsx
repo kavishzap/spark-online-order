@@ -20,7 +20,16 @@ export default function ProductImage({
   const [isLoading, setIsLoading] = useState(!src)
 
   useEffect(() => {
-    if (src || !productId) return undefined
+    if (!productId) return undefined
+
+    const cached = imageBase64
+      ? toImageSrc(imageBase64)
+      : getCachedProductImageSrc(productId)
+    if (cached) {
+      setSrc(cached)
+      setIsLoading(false)
+      return undefined
+    }
 
     let cancelled = false
 
@@ -57,7 +66,7 @@ export default function ProductImage({
         observer.disconnect()
         loadImage()
       },
-      { rootMargin: '240px' },
+      { rootMargin: '600px 0px' },
     )
 
     observer.observe(container)
@@ -66,7 +75,7 @@ export default function ProductImage({
       cancelled = true
       observer.disconnect()
     }
-  }, [productId, src, eager])
+  }, [productId, imageBase64, eager])
 
   return (
     <div ref={containerRef} className="product-image">
@@ -76,8 +85,9 @@ export default function ProductImage({
           src={src}
           alt=""
           className={`product-image__img ${className}`.trim()}
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
           decoding="async"
+          fetchPriority={eager ? 'high' : 'auto'}
         />
       ) : (
         !isLoading && (
